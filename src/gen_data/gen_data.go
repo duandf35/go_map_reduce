@@ -42,9 +42,7 @@ func gen(m int) int {
 // @param fn
 func write_to_csv(data []string, fn string) {
 	fpath := OUT_PUT_PATH + fn
-	if _, err := os.Stat(fpath); os.IsNotExist(err) {
-		os.MkdirAll(OUT_PUT_PATH, 0777)
-	}
+	check_create_dir(fpath)
 
 	csvf, err := os.Create(fpath)
 	if nil != err {
@@ -56,11 +54,11 @@ func write_to_csv(data []string, fn string) {
 
 	csvw := csv.NewWriter(csvf)
 	
-	// csv writer accept []string or [][]string
 	for _, e := range data {
 		fmt.Printf("Writing %s\n", e)
 	}
 	
+	// csv writer accept []string or [][]string
 	err = csvw.Write(data)
 	if (nil != err) {
 		fmt.Printf("Issue writing csv file: %s\n", err)
@@ -70,6 +68,14 @@ func write_to_csv(data []string, fn string) {
 	csvw.Flush()
 }
 
+// Create directory if not exists
+// @param dir
+func check_create_dir(dir string) {
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, 0777)
+	}
+}
+
 // Random data generator.
 func main() {
 	if (len(os.Args) < 4) {
@@ -77,7 +83,7 @@ func main() {
 		return
 	}
 
-	// Get all arguments except the program name (the 1st argument).
+	// Get all arguments except the program name (the 1st argument)
 	args := os.Args[1:]
 	n, err := strconv.ParseInt(args[0], 10, 64)
 	m, err := strconv.ParseInt(args[1], 10, 64)
