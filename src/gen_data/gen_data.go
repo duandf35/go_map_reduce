@@ -8,41 +8,63 @@ import(
 	"strconv"
 )
 
-const OUT_PUT_PATH = "./output/"
+const INPUT_PATH = "./input/"
+const OUTPUT_PATH = "./output/"
 
-// Generating n random non-negative pesudo-random integer between [0, m).
-// @param n
-// @param m
-// @return []string
-func gen_all(n int, m int) []string {
+// Generating random temperature between [0, max) for all cities.
+// @param cities
+// @param max
+// @return [][]string
+func genAll(cities [][]string, max int) [][]string {
 	// mp := make(map[string]string)
 
 	// list := [n]string throws error: non-constant array bound
-	list := make([]string, n)
+	// list := make([]string, n)
 
-	for i := 0; i < n; i++ {
-		list[i] = strconv.Itoa(gen(m))
+	for row := range cities {
+		cities[row] = append(cities[row], strconv.Itoa(genTmp(max)))
 	}
 
-	return list
+	return cities
 }
 
 // Generating one random non-negative pesudo-random integer between [0, m).
 // @param m
 // @return int
-func gen(m int) int {
+func genTmp(m int) int {
 	r := rand.Intn(m)
 	fmt.Printf("Generate new integer: %d\n", r)
 
 	return r
 }
 
+func readFromCSV(fn string) [][]string {
+	fpath := INPUT_PATH + fn;
+	csvf, err := os.Open(fpath)
+	var csvd [][]string
+
+	if nil != err {
+		fmt.Printf("Issue opening csv file: %s\n", err)
+	} else {
+		csvr := csv.NewReader(csvf)
+
+		data, err := csvr.ReadAll()
+		if (nil != err) {
+			fmt.Printf("Issue reading csv file: %s\n", err)
+		} else {
+			csvd = data
+		}
+	}
+
+	return csvd
+}
+
 // Write generated data into csv file.
 // @param data
 // @param fn
-func write_to_csv(data []string, fn string) {
-	fpath := OUT_PUT_PATH + fn
-	check_create_dir(fpath)
+func writeToCSV(data [][]string, fn string) {
+	fpath := OUTPUT_PATH + fn
+	checkDir(fpath)
 
 	csvf, err := os.Create(fpath)
 	if nil != err {
@@ -59,7 +81,7 @@ func write_to_csv(data []string, fn string) {
 	}
 	
 	// csv writer accept []string or [][]string
-	err = csvw.Write(data)
+	err = csvw.WriteAll(data)
 	if (nil != err) {
 		fmt.Printf("Issue writing csv file: %s\n", err)
 		return
@@ -68,9 +90,9 @@ func write_to_csv(data []string, fn string) {
 	csvw.Flush()
 }
 
-// Create directory if not exists
+// Create directory if not exists.
 // @param dir
-func check_create_dir(dir string) {
+func checkDir(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		os.MkdirAll(dir, 0777)
 	}
@@ -79,20 +101,20 @@ func check_create_dir(dir string) {
 // Random data generator.
 func main() {
 	if (len(os.Args) < 4) {
-		fmt.Println("Expect 3 arguments. Use case: '$GOPATH/bin/gen [numberOfRecords] [upperBound] [fileName]'\n")
+		fmt.Println("Expect 3 arguments. Use case: '$GOPATH/bin/gen_data [upperBound] [intputFile] [outputFile]'\n")
 		return
 	}
 
 	// Get all arguments except the program name (the 1st argument)
 	args := os.Args[1:]
-	n, err := strconv.ParseInt(args[0], 10, 64)
-	m, err := strconv.ParseInt(args[1], 10, 64)
-	fn := args[2]
+	m, err := strconv.ParseInt(args[0], 10, 64)
+	input := args[1]
+	output := args[2]
 
 	if nil != err {
 		fmt.Printf("Invalid argument: %s\n", err)
 	}
 	
-	fmt.Printf("Creating csv file: %s with %d random integer between [0, %d).\n", fn, n, m)
-	write_to_csv(gen_all(int(n), int(m)), fn)
+	fmt.Printf("Creating csv file: %s from %s with temerature between [0, %d).\n", output, input, m)
+	writeToCSV(genAll(readFromCSV(input), int(m)), output)
 }
