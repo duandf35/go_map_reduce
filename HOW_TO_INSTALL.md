@@ -16,10 +16,17 @@ $GOPATH
 	|_ src
 		|_ hello_in_src.go
 		|_ hello
-			|_hello_in_pkg.go
+			|_hello_in_pkg.go (package main)
+			|_hello_not_main.go (package sth)
+			|_hello_also_not_main.go (package sth)
 ```
 
-The source code should be put under *src* directory, the compiled code will be under *bin* directory
+The source code should be put under *src* directory.
+
+For compiled code, the *main* package will be under *bin* directory, other package will be under *pkg* directory
+
+The function will be accessed from the package level instead of the file level.
+
 
 ```
 go install hello
