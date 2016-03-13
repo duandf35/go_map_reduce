@@ -16,9 +16,9 @@ $GOPATH
 	|_ src
 		|_ hello_in_src.go
 		|_ hello
-			|_hello_in_pkg.go (package main)
-			|_hello_not_main.go (package sth)
-			|_hello_also_not_main.go (package sth)
+			|_ hello_in_pkg.go (package main)
+			|_ mod_in_sth.go (package sth)
+			|_ mod2_in_sth.go (package sth)
 ```
 
 The source code should be put under *src* directory.
@@ -29,11 +29,9 @@ The function will be accessed from the package level instead of the file level.
 
 
 ```
-go install hello
+go install hello # compile the code under dir $GOPATH/src/hello/
 
-$GOPATH/bin/hello
+$GOPATH/bin/hello # execute complied code (main func in main package)
 
 hello workd in src/hello
 ```
-
-go compiled the file under $GOPATH/src/hello/
