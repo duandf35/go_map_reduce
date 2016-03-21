@@ -18,7 +18,11 @@ func genTmps(cities [][]string, max int) [][]string {
 	// list := make([]string, n)
 
 	for row := range cities {
-		cities[row] = append(cities[row], strconv.Itoa(genTmp(max)))
+		if row == 0 {
+			cities[row] = append(cities[row], "Temperature")
+		} else {
+			cities[row] = append(cities[row], strconv.Itoa(genTmp(max)))
+		}
 	}
 
 	return cities
@@ -29,7 +33,7 @@ func genTmps(cities [][]string, max int) [][]string {
 // @return int
 func genTmp(m int) int {
 	r := rand.Intn(m)
-	fmt.Printf("Generate new integer: %d\n", r)
+	// fmt.Printf("Generate new integer: %d\n", r)
 
 	return r
 }
@@ -40,5 +44,7 @@ func genTmp(m int) int {
 // @param input
 func Do(max int, output string, input string) {
 	fmt.Printf("Creating csv file: %s from %s with temerature between [0, %d).\n", output, input, max)
-	utils.WriteToCSV(genTmps(utils.ReadFromCSV(input), max), output)
+	bucket := utils.ReadFromCSV(input)
+
+	utils.WriteToCSV(genTmps(bucket, max), output)
 }

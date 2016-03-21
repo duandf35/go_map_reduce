@@ -8,7 +8,9 @@ import(
 
 // IMPORTANT: Make the first letter of function name UPPER CASE to EXPORT!
 
-// Read data from csv file
+// TODO: Read certain size of data (bucket) from file. When dealing with Big Data, it's impossible to read the whole file at a time.
+
+// Read data from csv file.
 // @param input path
 // @return data
 func ReadFromCSV(input string) [][]string {
@@ -16,13 +18,13 @@ func ReadFromCSV(input string) [][]string {
 	var csvd [][]string
 
 	if nil != err {
-		fmt.Printf("Issue opening csv file: %s\n", err)
+		fmt.Printf("Issue opening csv file: %s, err: %s\n", input, err)
 	} else {
 		csvr := csv.NewReader(csvf)
 
 		data, err := csvr.ReadAll()
 		if (nil != err) {
-			fmt.Printf("Issue reading csv file: %s\n", err)
+			fmt.Printf("Issue reading csv file: %s, err: %s\n", input, err)
 		} else {
 			csvd = data
 		}
@@ -37,7 +39,7 @@ func ReadFromCSV(input string) [][]string {
 func WriteToCSV(data [][]string, output string) {
 	csvf, err := os.Create(output)
 	if nil != err {
-		fmt.Printf("Issue creating csv file: %s\n", err)
+		fmt.Printf("Issue creating csv file: %s, err: %s\n", output, err)
 		return
 	}
 
@@ -45,14 +47,14 @@ func WriteToCSV(data [][]string, output string) {
 
 	csvw := csv.NewWriter(csvf)
 	
-	for _, e := range data {
-		fmt.Printf("Writing %s\n", e)
-	}
+	// for _, e := range data {
+	// 	fmt.Printf("Writing %s\n", e)
+	// }
 	
 	// csv writer accept []string or [][]string
 	err = csvw.WriteAll(data)
 	if (nil != err) {
-		fmt.Printf("Issue writing csv file: %s\n", err)
+		fmt.Printf("Issue writing csv file: %s, err%s\n", output, err)
 		return
 	}
 	
