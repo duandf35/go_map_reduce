@@ -6,17 +6,13 @@ import(
 	"os"
 )
 
-const INPUT_PATH = "/input/"
-const OUTPUT_PATH = "/output/"
-
 // IMPORTANT: Make the first letter of function name UPPER CASE to EXPORT!
 
 // Read data from csv file
-// @param fn
+// @param input path
 // @return data
-func ReadFromCSV(fn string) [][]string {
-	f := os.Getenv("GOPATH") + INPUT_PATH + fn;
-	csvf, err := os.Open(f)
+func ReadFromCSV(input string) [][]string {
+	csvf, err := os.Open(input)
 	var csvd [][]string
 
 	if nil != err {
@@ -37,11 +33,9 @@ func ReadFromCSV(fn string) [][]string {
 
 // Write generated data into csv file.
 // @param data
-// @param fn
-func WriteToCSV(data [][]string, fn string) {
-	f := checkDir(os.Getenv("GOPATH") + OUTPUT_PATH) + fn
-	
-	csvf, err := os.Create(f)
+// @param output path
+func WriteToCSV(data [][]string, output string) {
+	csvf, err := os.Create(output)
 	if nil != err {
 		fmt.Printf("Issue creating csv file: %s\n", err)
 		return
@@ -63,14 +57,4 @@ func WriteToCSV(data [][]string, fn string) {
 	}
 	
 	csvw.Flush()
-}
-
-// Create directory if not exists.
-// @param dir
-func checkDir(dir string) string {
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		os.MkdirAll(dir, 0777)
-	}
-
-	return dir
 }
