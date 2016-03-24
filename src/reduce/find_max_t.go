@@ -9,9 +9,6 @@ import(
 	"reduce/utils"
 )
 
-// Default result file name
-const RESULT = "maxTemperature.csv"
-
 // TODO: How to throw exception ?
 
 // Find max temperature of EACH city and write the result into file.
@@ -22,6 +19,8 @@ func findMax(src [][]string) [][]string {
 	// Map to track max temperature of each city
 	mapping := make(map[string]int)
 	
+	fmt.Printf("Finding highest temperature of each city...")
+
 	// TODO: More flexibility
 	for row := range src {
 		// fmt.Printf("Processing %d row: %s, length: %d\n", row, src[row], len(src[row]))
@@ -32,7 +31,7 @@ func findMax(src [][]string) [][]string {
 				rawTemperature, err := strconv.ParseInt(src[row][7], 10, 64)
 
 				if nil != err {
-					fmt.Printf("Invalid temperature: %d, skip.\n", src[row][9])
+					// fmt.Printf("Invalid temperature: %d, skip.\n", src[row][9])
 				} else {
 					temperature := int(rawTemperature)
 					existTemperature, ok := mapping[city]
@@ -48,11 +47,18 @@ func findMax(src [][]string) [][]string {
 					}
 				}
 			} else {
-				fmt.Printf("Skip invalid city name: %s\n", city)
+				// fmt.Printf("Skip invalid city name: %s\n", city)
 			}
 		}
 	}
 
+	return copyResult(mapping)
+}
+
+// Copy result into [][]string map which can be picked up by the CSV Writer.
+// @param mapping
+// @return result
+func copyResult(mapping map[string]int) [][]string {
 	// List to store final result
 	result := make([][]string, 50)
 	count := 0
@@ -76,10 +82,14 @@ func findMax(src [][]string) [][]string {
 		
 		count++
 	}
-	
+
 	return result
 }
 
+// Validate city name. 
+// City name is invalid if the string contains any digit rune
+// @param city
+// @return true if valid
 func isValidCity(city string) bool {
 	isValid := true
 	if _, err := strconv.Atoi(city); err == nil {
@@ -98,8 +108,8 @@ func isValidCity(city string) bool {
 
 // Find max temperature of EACH city and write the result into file.
 func main() {
-	if (len(os.Args) < 4) {
-		fmt.Println("Expect 3 arguments. Use case: '$GOPATH/bin/reduce [upperBound] [intputFile].csv [outputFile].csv'\n")
+	if (len(os.Args) < 3) {
+		fmt.Println("Expect 2 arguments. Use case: '$GOPATH/bin/reduce [upperBound] [intputFile].csv'\n")
 		return
 	}
 
@@ -107,19 +117,21 @@ func main() {
 	args := os.Args[1:]
 	m, err := strconv.Atoi(args[0])
 	input := utils.InputPath(args[1])
-	output := utils.OutputPath(args[2])
-
+	
 	if nil != err {
 		fmt.Printf("Invalid argument: %s\n", err)
-	}
+		return
+	} 
 
-	fmt.Printf("Generating data into %s ...\n", output)
-	gen.Do(m, output, input)
+	// Generate testing data
+	gen.Do(m, input)
 
-	resultOutput := utils.OutputPath(RESULT)
-	bucket := utils.ReadFromCSV(output)
+	genPath := utils.DefaultGenPath()
+	resultPath := utils.DefaultResultPath()
+
+	bucket := utils.ReadFromCSV(genPath)
 	result := findMax(bucket)
-	utils.WriteToCSV(result, resultOutput)
+	utils.WriteToCSV(result, resultPath)
 
-	fmt.Printf("Result has written in path: %s\n", resultOutput)
+	fmt.Printf("Result has written in path: %s\n", resultPath)
 }

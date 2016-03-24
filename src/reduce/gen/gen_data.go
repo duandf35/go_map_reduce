@@ -40,11 +40,12 @@ func genTmp(m int) int {
 
 // Random data generator.
 // @param max the max temperature
-// @param output
 // @param input
-func Do(max int, output string, input string) {
-	fmt.Printf("Creating csv file: %s from %s with temerature between [0, %d).\n", output, input, max)
+func Do(max int, input string) {
+	output := utils.DefaultGenPath()
 	bucket := utils.ReadFromCSV(input)
 
 	utils.WriteToCSV(genTmps(bucket, max), output)
+
+	fmt.Printf("Creating csv file: %s from %s with temerature between [0, %d).\n", output, input, max)
 }

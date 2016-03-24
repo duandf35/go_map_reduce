@@ -6,8 +6,6 @@ import(
 	"os"
 )
 
-// IMPORTANT: Make the first letter of function name UPPER CASE to EXPORT!
-
 // TODO: Read certain size of data (bucket) from file. When dealing with Big Data, it's impossible to read the whole file at a time.
 
 // Read data from csv file.
